@@ -3,11 +3,12 @@
 # toolchain with rustfmt, clippy and the wasm32 target. Everything else (trunk, cargo-deny,
 # sops, linespec, node/wrangler via mise, worker-build) is installed per job by rust-worker.
 #
-# Build and push: `make image.gha-runner-rust` (amd64; the tag comes from services/arc/runners/rust-worker.values.yaml).
+# Build and push: the publish workflow does it on merge to main (amd64; the tag is in ./TAG).
+# Consumed by the cjfinnell/rust-worker ARC scale set in cjfinnell/homelab.
 FROM ghcr.io/actions/actions-runner:2.338.0@sha256:4ffadc0002b2581327e06101fc8c06cd189232baf79fe561fac9caeb76f5e807
 
 # Links the GHCR package to this repo.
-LABEL org.opencontainers.image.source=https://github.com/cjfinnell/homelab
+LABEL org.opencontainers.image.source=https://github.com/cjfinnell/gh-runner-images
 
 ARG TARGETARCH
 ARG RUST_VERSION=1.99.1

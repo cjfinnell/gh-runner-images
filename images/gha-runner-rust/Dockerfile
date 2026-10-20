@@ -18,9 +18,10 @@ ARG GH_VERSION=2.102.0
 USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# build-essential: cc/make for build scripts and proc-macros. zstd: faster actions/cache archives.
+# build-essential: cc/make for build scripts and proc-macros. pkg-config + libssl-dev: openssl-sys
+# (worker-build via `cargo install`). zstd: faster actions/cache archives.
 RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends build-essential pkg-config zstd xz-utils \
+    && apt-get install -y --no-install-recommends build-essential pkg-config libssl-dev zstd xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # gh CLI (preview.yml calls `gh api`), checksum-verified release tarball.

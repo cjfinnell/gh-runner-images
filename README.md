@@ -4,7 +4,7 @@ Custom runner images for the self-hosted GitHub Actions scale sets (ARC) deploye
 
 | Image | Used by | Contents |
 | --- | --- | --- |
-| [`gha-runner-rust`](./images/gha-runner-rust) | `cjfinnell/rust-worker` | build-essential, `gh`, pinned Rust toolchain with rustfmt, clippy and wasm32 |
+| [`gha-runner-rust`](./images/gha-runner-rust) | `cjfinnell/rust-worker` | build-essential, libssl-dev, `gh`, pinned Rust toolchain with rustfmt, clippy and wasm32 |
 
 ## Changing an image
 

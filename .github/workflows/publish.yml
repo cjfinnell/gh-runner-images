@@ -8,19 +8,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  gha-runner-rust:
-    name: build and push gha-runner-rust
+  publish:
+    name: build and push ${{ matrix.image }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [gha-runner-rust, quartz-vault]
     env:
-      IMAGE: ghcr.io/cjfinnell/gha-runner-rust
+      IMAGE: ghcr.io/cjfinnell/${{ matrix.image }}
     steps:
       - uses: actions/checkout@v7
       - name: Resolve tag
         id: tag
-        run: echo "value=$(cat images/gha-runner-rust/TAG)" >> "$GITHUB_OUTPUT"
+        run: echo "value=$(cat "images/${{ matrix.image }}/TAG")" >> "$GITHUB_OUTPUT"
       - uses: docker/login-action@v4.6.0
         with:
           registry: ghcr.io
@@ -37,7 +41,7 @@ jobs:
       - uses: docker/build-push-action@v7.4.0
         if: steps.exists.outputs.found != 'true' || github.event_name == 'workflow_dispatch'
         with:
-          context: images/gha-runner-rust
+          context: images/${{ matrix.image }}
           platforms: linux/amd64
           push: true
           tags: ${{ env.IMAGE }}:${{ steps.tag.outputs.value }}

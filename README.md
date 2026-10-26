@@ -5,6 +5,7 @@ Custom runner images for the self-hosted GitHub Actions scale sets (ARC) deploye
 | Image | Used by | Contents |
 | --- | --- | --- |
 | [`gha-runner-rust`](./images/gha-runner-rust) | `cjfinnell/rust-worker` | build-essential, libssl-dev, `gh`, pinned Rust toolchain with rustfmt, clippy and wasm32 |
+| [`quartz-vault`](./images/quartz-vault) | homelab `vault-viewer` ([#124](https://github.com/cjfinnell/homelab/issues/124)) | Quartz v5 (commit-pinned) + the vault's `quartz.config.yaml` and builder loop; no vault content |
 
 ## Changing an image
 

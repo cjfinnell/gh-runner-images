@@ -2,7 +2,7 @@
 #
 # The image holds Quartz itself, the vault's quartz.config.yaml and the npm
 # plugins — never vault content. At runtime the pod clones cfin/nanoclaw-memory
-# over in-cluster Gitea SSH and runs `npx quartz build`; see build.sh.
+# over in-cluster Gitea SSH and runs `quartz build`; see build.sh.
 #
 # Quartz v5 is a branch with no release tag (last tag: v4.0.8), so the source is
 # pinned by commit.
@@ -33,8 +33,9 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/ /usr/src/app/
+COPY drop-bad-frontmatter.mjs ./
 COPY build.sh /usr/local/bin/vault-build
-# Writable HOME for git/npx caches. /usr/src/app/quartz/.quartz-cache must stay
+# Writable HOME for git/npm caches. /usr/src/app/quartz/.quartz-cache must stay
 # writable too (esbuild output): the chart mounts an emptyDir there and at /tmp.
 ENV HOME=/tmp
 USER node

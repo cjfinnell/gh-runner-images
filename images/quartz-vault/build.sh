@@ -41,6 +41,11 @@ while true; do
     fi
 
     node drop-bad-frontmatter.mjs "$SRC" || echo "frontmatter check failed; building anyway"
+    # The vault has no home note; without index.md Quartz emits no index.html
+    # and / (the chart's probe path) 404s.
+    if [ ! -f "$SRC/index.md" ]; then
+      printf -- '---\ntitle: Memory vault\n---\n' > "$SRC/index.md"
+    fi
 
     out="$BUILDS/$sha"
     rm -rf "$out"

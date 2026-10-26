@@ -3,8 +3,9 @@
 #
 # Polls main of the vault repo every POLL_SECONDS. On a new commit: fresh
 # single-branch clone (never mem/* branches), quartz build into
-# /site/builds/<sha>, then an atomic /site/current symlink swap. A failed build
-# leaves the previous site up; the error goes to the logs.
+# /site/builds/<sha>, then an atomic /site/current symlink swap. Notes with
+# unparseable frontmatter are skipped (logged) rather than failing the build. A
+# failed build leaves the previous site up; the error goes to the logs.
 #
 # Required env (set by the chart):
 #   VAULT_REPO     git URL over in-cluster Gitea SSH
@@ -39,9 +40,13 @@ while true; do
       continue
     fi
 
+    node drop-bad-frontmatter.mjs "$SRC" || echo "frontmatter check failed; building anyway"
+
     out="$BUILDS/$sha"
     rm -rf "$out"
-    if npx quartz build -d "$SRC" -o "$out"; then
+    # Not `npx quartz`: npx links this package into its cache and chmods the
+    # bin, which fails under readOnlyRootFilesystem (EROFS).
+    if node quartz/bootstrap-cli.mjs build -d "$SRC" -o "$out"; then
       # Swap current atomically: build the symlink elsewhere, rename over.
       ln -sfn "$out" "$SITE/current.next"
       mv -Tf "$SITE/current.next" "$SITE/current"

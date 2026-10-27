@@ -206,6 +206,10 @@ plugins:
       group: toolbar
   - source: "@quartz-community/breadcrumbs"
     enabled: true
+    options:
+      # Default "❯" (U+276F) is missing from common system fonts and renders
+      # as tofu; "›" (U+203A) is in every stack we ship.
+      spacerSymbol: "›"
     layout:
       position: beforeBody
       priority: 5

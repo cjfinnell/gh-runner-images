@@ -60,6 +60,15 @@ td > code {
   color: var(--darkgray);
 }
 
+// A link inside a code chip sits on the blended highlight tint, where the
+// body link blue misses AA (4.27:1 light); the tertiary blue clears it
+// (5.5:1 light, higher in dark).
+p > code a,
+li > code a,
+td > code a {
+  color: var(--tertiary);
+}
+
 a.internal {
   background-color: transparent;
   padding: 0;

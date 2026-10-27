@@ -41,6 +41,9 @@ while true; do
     fi
 
     node drop-bad-frontmatter.mjs "$SRC" || echo "frontmatter check failed; building anyway"
+    # Vault notes carry their title as the leading H1, not frontmatter; without
+    # this pass Quartz shows the slug above a duplicate H1.
+    node title-from-h1.mjs "$SRC" || echo "title pass failed; building anyway"
 
     out="$BUILDS/$sha"
     rm -rf "$out"

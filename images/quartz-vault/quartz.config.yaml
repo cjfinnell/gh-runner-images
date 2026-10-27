@@ -19,10 +19,14 @@ configuration:
     # Local fonts + no CDN caching: no third-party requests from private pages.
     fontOrigin: local
     cdnCaching: false
+    # System stacks only: no font files load in local mode, so a named family
+    # (Schibsted/Source Sans/Plex) silently degrades to the browser serif.
+    # Quartz appends its own system fallbacks to each var; custom.scss pins
+    # the exact -apple-system / ui-monospace stacks.
     typography:
-      header: Schibsted Grotesk
-      body: Source Sans Pro
-      code: IBM Plex Mono
+      header: system-ui
+      body: system-ui
+      code: ui-monospace
     colors:
       lightMode:
         light: "#faf8f8"
@@ -105,11 +109,12 @@ plugins:
   - source: "@quartz-community/roam"
     enabled: false
     order: 92
-  # The plugin option is separate from theme.fontOrigin and defaults to googleFonts
-  # (external stylesheet links). "local" keeps the font-family CSS but loads no
-  # third-party stylesheet; "selfHosted" would fetch from Google at build time.
+  # Off. Even in local mode (no webfont fetch) the plugin re-asserted the
+  # Google families unquoted on h1-h6, which beat the theme vars and dropped
+  # headings to the browser serif. theme.typography + custom.scss own the
+  # system stacks now. fontOrigin kept in case it is ever re-enabled.
   - source: "@quartz-community/quartz-fonts"
-    enabled: true
+    enabled: false
     options:
       fontOrigin: local
   - source: "@quartz-themes/core"
@@ -237,7 +242,9 @@ plugins:
     enabled: true
     options: {}
     order: 50
-  # Shows the OKF frontmatter, including the type field.
+  # Frontmatter box off the page (readability pass); the transformer stays on
+  # because dates, aliases and cssclasses come from it. A note can opt back in
+  # with `quartz-properties: true` in its frontmatter.
   - source: "@quartz-community/note-properties"
     enabled: true
     options:
@@ -248,7 +255,7 @@ plugins:
         - aliases
         - type
       excludedProperties: []
-      hidePropertiesView: false
+      hidePropertiesView: true
       delimiters: ---
       language: yaml
     order: 5

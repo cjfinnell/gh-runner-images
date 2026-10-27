@@ -33,7 +33,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/ /usr/src/app/
-COPY drop-bad-frontmatter.mjs ./
+COPY custom.scss quartz/styles/
+COPY drop-bad-frontmatter.mjs title-from-h1.mjs ./
 COPY build.sh /usr/local/bin/vault-build
 # Writable HOME for git/npm caches. /usr/src/app/quartz/.quartz-cache must stay
 # writable too (esbuild output): the chart mounts an emptyDir there and at /tmp.

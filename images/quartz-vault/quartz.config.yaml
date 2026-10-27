@@ -19,10 +19,14 @@ configuration:
     # Local fonts + no CDN caching: no third-party requests from private pages.
     fontOrigin: local
     cdnCaching: false
+    # System stacks only: no font files load in local mode, so a named family
+    # (Schibsted/Source Sans/Plex) silently degrades to the browser serif.
+    # Quartz appends its own system fallbacks to each var; custom.scss pins
+    # the exact -apple-system / ui-monospace stacks.
     typography:
-      header: Schibsted Grotesk
-      body: Source Sans Pro
-      code: IBM Plex Mono
+      header: system-ui
+      body: system-ui
+      code: ui-monospace
     colors:
       lightMode:
         light: "#faf8f8"
@@ -30,9 +34,10 @@ configuration:
         gray: "#b8b8b8"
         darkgray: "#4e4e4e"
         dark: "#2b2b2b"
-        secondary: "#284b63"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
+        # Bright blue accent (Connor, 2026-10-27): #2563eb on #faf8f8 is 4.9:1, AA.
+        secondary: "#2563eb"
+        tertiary: "#1d4ed8"
+        highlight: rgba(37, 99, 235, 0.10)
         textHighlight: "#fff23688"
       darkMode:
         light: "#161618"
@@ -40,9 +45,10 @@ configuration:
         gray: "#646464"
         darkgray: "#d4d4d4"
         dark: "#ebebec"
-        secondary: "#7b97aa"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
+        # #60a5fa on #161618 is 7.1:1, AA.
+        secondary: "#60a5fa"
+        tertiary: "#93c5fd"
+        highlight: rgba(96, 165, 250, 0.15)
         textHighlight: "#b3aa0288"
 plugins:
   - source: "@quartz-community/created-modified-date"
@@ -105,11 +111,12 @@ plugins:
   - source: "@quartz-community/roam"
     enabled: false
     order: 92
-  # The plugin option is separate from theme.fontOrigin and defaults to googleFonts
-  # (external stylesheet links). "local" keeps the font-family CSS but loads no
-  # third-party stylesheet; "selfHosted" would fetch from Google at build time.
+  # Off. Even in local mode (no webfont fetch) the plugin re-asserted the
+  # Google families unquoted on h1-h6, which beat the theme vars and dropped
+  # headings to the browser serif. theme.typography + custom.scss own the
+  # system stacks now. fontOrigin kept in case it is ever re-enabled.
   - source: "@quartz-community/quartz-fonts"
-    enabled: true
+    enabled: false
     options:
       fontOrigin: local
   - source: "@quartz-themes/core"
@@ -201,6 +208,10 @@ plugins:
       group: toolbar
   - source: "@quartz-community/breadcrumbs"
     enabled: true
+    options:
+      # Default "❯" (U+276F) is missing from common system fonts and renders
+      # as tofu; "›" (U+203A) is in every stack we ship.
+      spacerSymbol: "›"
     layout:
       position: beforeBody
       priority: 5
@@ -237,7 +248,9 @@ plugins:
     enabled: true
     options: {}
     order: 50
-  # Shows the OKF frontmatter, including the type field.
+  # Frontmatter box off the page (readability pass); the transformer stays on
+  # because dates, aliases and cssclasses come from it. A note can opt back in
+  # with `quartz-properties: true` in its frontmatter.
   - source: "@quartz-community/note-properties"
     enabled: true
     options:
@@ -248,7 +261,7 @@ plugins:
         - aliases
         - type
       excludedProperties: []
-      hidePropertiesView: false
+      hidePropertiesView: true
       delimiters: ---
       language: yaml
     order: 5

@@ -2,6 +2,11 @@
 // `# Heading`, not in frontmatter, so Quartz would show the file slug
 // (memory-vault) above a duplicate H1. For notes without a frontmatter title,
 // move the leading H1 into `title:`. Runs on the per-build clone only.
+//
+// Every agent folder has an index.md headed "Memory Index", so the folder
+// listing and Explorer showed several identical entries. A non-root index.md
+// with that generic H1 is titled after its folder instead (agents/terminal ->
+// "terminal").
 import fs from "node:fs"
 import path from "node:path"
 
@@ -24,7 +29,12 @@ for (const file of walk(root)) {
   const body = m ? text.slice(m[0].length) : text
   const h1 = body.match(/^\s*# (.+?)\s*\r?\n/)
   if (!h1) continue
-  const title = `title: ${JSON.stringify(h1[1])}`
+  const dir = path.basename(path.dirname(file))
+  const generic =
+    path.basename(file) === "index.md" &&
+    path.dirname(file) !== path.resolve(root) &&
+    h1[1] === "Memory Index"
+  const title = `title: ${JSON.stringify(generic ? dir : h1[1])}`
   const rest = body.slice(h1[0].length)
   const front = head === null ? title : `${head}\n${title}`
   fs.writeFileSync(file, `---\n${front}\n---\n${rest}`)
